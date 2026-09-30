@@ -42,6 +42,51 @@ def build_pipeline():
     return final_pipeline
 
 
+def crop_recomendation(n,p,k,ph,temp,humidity,rainfall):    
+    #lets take the imput for model 
+
+    #load  a train model and pipeline File 
+
+    model = joblib.load(MODEL_FILE)
+    pipeline = joblib.load(PIPELINE_FILE)
+    output =  joblib.load(LABEL_ENCODE_OP)
+
+
+    # ph_category feature engineer karna jaise notebook me kiya tha
+    ph_bins = [0, 5.5, 6.5, 7.5, 8.5, 14]
+    ph_labels = [
+        "strongly_acidic",
+        "moderately_acidic",
+        "neutral",
+        "alkaline",
+        "strongly_alkaline",
+    ]
+    ph_cat = pd.cut([ph], bins=ph_bins, labels=ph_labels)[0]
+
+    # DataFrame banana matching exact training columns
+    input_data = pd.DataFrame(
+        [
+            {
+                "N": n,
+                "P": p,
+                "K": k,
+                "temperature": temp,
+                "humidity": humidity,
+                "ph": ph,
+                "rainfall": rainfall,
+                "ph_category": str(ph_cat),
+            }
+        ]
+    )
+
+    input_transform = pipeline.transform(input_data)
+    input_pred = model.predict(input_transform)
+    output_pred = output.inverse_transform(input_pred)
+
+    return output_pred
+
+
+
 if not os.path.exists(MODEL_FILE):
 
     #import file
@@ -92,63 +137,4 @@ if not os.path.exists(MODEL_FILE):
     print(f"Precision : {prec}")
     print(f"Recall : {rec}")
     print(f"f1 Score : {f1}")
-
-else:
-
-    #lets take the imput for model 
-
-    #load  a train model and pipeline File 
-
-    model = joblib.load(MODEL_FILE)
-    pipeline = joblib.load(PIPELINE_FILE)
-    output =  joblib.load(LABEL_ENCODE_OP)
-
-
-    print("--- Enter Soil & Environmental Parameters ---")
-    n = float(input("Nitrogen (N): "))
-    p = float(input("Phosphorus (P): "))
-    k = float(input("Potassium (K): "))
-    ph = float(input("Soil pH: "))
-
-    temp = float(input("Temperature (°C): "))
-    humidity = float(input("Humidity (%): "))
-    rainfall = float(input("Rainfall (mm): "))
-
-    # ph_category feature engineer karna jaise notebook me kiya tha
-    ph_bins = [0, 5.5, 6.5, 7.5, 8.5, 14]
-    ph_labels = [
-        "strongly_acidic",
-        "moderately_acidic",
-        "neutral",
-        "alkaline",
-        "strongly_alkaline",
-    ]
-    ph_cat = pd.cut([ph], bins=ph_bins, labels=ph_labels)[0]
-
-    # DataFrame banana matching exact training columns
-    input_data = pd.DataFrame(
-        [
-            {
-                "N": n,
-                "P": p,
-                "K": k,
-                "temperature": temp,
-                "humidity": humidity,
-                "ph": ph,
-                "rainfall": rainfall,
-                "ph_category": str(ph_cat),
-            }
-        ]
-    )
-
-    input_transform = pipeline.transform(input_data)
-    input_pred = model.predict(input_transform)
-    output_pred = output.inverse_transform(input_pred)
-
-
-
-
-    print("------------------------------------------------------")
-    print("Predicted Crop:", output_pred[0])
-    print("------------------------------------------------------")
 
