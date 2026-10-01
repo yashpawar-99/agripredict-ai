@@ -201,4 +201,5 @@ rainfall_30_days , temperature_2m,relative_humidity_1000hpa,relative_humidity_10
     "Kharif"
 )
 
+print("information fached by api")
 print(rainfall_30_days , temperature_2m, relative_humidity_1000hpa, relative_humidity_100hpa)
