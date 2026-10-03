@@ -5,11 +5,22 @@ Requires:  pip install streamlit plotly
 """
 
 import base64
+import os
+import sys
 from pathlib import Path
 import streamlit as st
 import plotly.graph_objects as go
 
-LOGO_PATH = Path(__file__).resolve().parent.parent / "assets" / "logo.png"
+# Add project root directory to sys.path
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.append(str(ROOT_DIR))
+
+from utils.wather_api import get_weather
+from models.crop_recomendation import crop_recomendation
+from models.crop_yeild import predict_yield
+
+LOGO_PATH = ROOT_DIR / "assets" / "logo.png"
 if not LOGO_PATH.is_file():
     LOGO_PATH = Path(r"C:\Users\Yash\DataScienceCode\agripredict-ai\assets\logo.png")
 LOGO_BASE64 = base64.b64encode(LOGO_PATH.read_bytes()).decode() if LOGO_PATH.is_file() else None
@@ -702,9 +713,85 @@ with btn_col2:
     generate = st.button("Generate Prediction  →", use_container_width=True)
 
 if generate:
-    st.success(
-        f"**Prediction ready for {district}, {state}** — Season: {season} | Area: {area} ha | "
-        f"N-P-K: {int(nitrogen)}-{int(phosphorus)}-{int(potassium)} kg/ha | Soil pH: {soil_ph}\n\n"
-        "Recommended crop: **Soybean** — Estimated yield: **~2.8 tonnes/ha** "
-        "*(demo output — plug in your trained model here)*"
-    )
+    with st.spinner("Fetching weather data and generating predictions..."):
+        try:
+            # 1. Fetch weather data from Open-Meteo via wather_api
+            rainfall_30_days, temperature_2m, relative_humidity_1000hpa, relative_humidity_100hpa = get_weather(
+                state=state,
+                district=district,
+                season=season
+            )
+
+            # 2. Crop Recommendation Model
+            crop_preds = crop_recomendation(
+                n=nitrogen,
+                p=phosphorus,
+                k=potassium,
+                ph=soil_ph,
+                temp=temperature_2m,
+                humidity=relative_humidity_1000hpa,
+                rainfall=rainfall_30_days
+            )
+            recommended_crop = str(crop_preds[0])
+
+            # 3. Crop Yield Prediction Model
+            # Format crop title to match yield training dataset conventions
+            yield_crop_input = recommended_crop.strip().title()
+            predicted_yield, predicted_production = predict_yield(
+                state=state,
+                district=district,
+                season=season,
+                crop=yield_crop_input,
+                temperature=temperature_2m,
+                humidity=relative_humidity_100hpa,
+                area=area
+            )
+
+            # 4. Display Results
+            st.markdown("<br>", unsafe_allow_html=True)
+            with st.container(border=True):
+                head("insights", "Prediction Results", f"Generated for {district}, {state} ({season} season)")
+
+                res_col1, res_col2 = st.columns(2)
+                with res_col1:
+                    st.markdown(
+                        f"""
+                        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:18px; height:100%;">
+                            <span style="font-size:0.8rem; color:#15803d; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Recommended Crop</span>
+                            <h2 style="color:#14532d; margin:8px 0 4px 0; font-size:2rem; font-weight:800;">{recommended_crop.title()}</h2>
+                            <p style="color:#4a6a5a; font-size:0.85rem; margin:0;">Optimal crop matched for soil parameters (N-P-K: {int(nitrogen)}-{int(phosphorus)}-{int(potassium)}, pH: {soil_ph}) and local weather conditions.</p>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                with res_col2:
+                    st.markdown(
+                        f"""
+                        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:18px; height:100%;">
+                            <span style="font-size:0.8rem; color:#15803d; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Estimated Yield & Production</span>
+                            <h2 style="color:#14532d; margin:8px 0 4px 0; font-size:2rem; font-weight:800;">{predicted_yield:.2f} <span style="font-size:1rem; font-weight:500; color:#56695f;">tonnes / ha</span></h2>
+                            <p style="color:#4a6a5a; font-size:0.85rem; margin:0;">Total estimated harvest: <b>{predicted_production:.2f} tonnes</b> over <b>{area:.1f} hectares</b>.</p>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+
+                st.markdown("<br>", unsafe_allow_html=True)
+                # Weather Summary Box
+                st.markdown(
+                    f"""
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px 18px;">
+                        <span style="font-size:0.85rem; font-weight:700; color:#1e293b;">Live Weather Parameters Used in Prediction:</span>
+                        <div style="display:flex; flex-wrap:wrap; gap:20px; margin-top:10px; font-size:0.88rem; color:#475569;">
+                            <div>🌡️ <b>Temperature:</b> {temperature_2m:.2f} °C</div>
+                            <div>🌧️ <b>Rainfall (30 days):</b> {rainfall_30_days:.2f} mm</div>
+                            <div>💧 <b>Humidity (1000 hPa):</b> {relative_humidity_1000hpa:.2f} %</div>
+                            <div>☁️ <b>Humidity (100 hPa):</b> {relative_humidity_100hpa:.2f} %</div>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+        except Exception as e:
+            st.error(f"Prediction failed: {str(e)}")

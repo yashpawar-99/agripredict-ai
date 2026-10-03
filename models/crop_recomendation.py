@@ -13,9 +13,10 @@ from sklearn.impute import SimpleImputer
 
 # Create a model and pipeline file 
 
-MODEL_FILE = "model.pkl"
-PIPELINE_FILE = "pipeline.pkl"
-LABEL_ENCODE_OP = "label_encoder.pkl"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_FILE = os.path.join(BASE_DIR, "model.pkl")
+PIPELINE_FILE = os.path.join(BASE_DIR, "pipeline.pkl")
+LABEL_ENCODE_OP = os.path.join(BASE_DIR, "label_encoder.pkl")
 
 # a pipliene to process  a data 
 

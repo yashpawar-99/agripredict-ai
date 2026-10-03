@@ -14,9 +14,10 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
 
 
-MODEL_FILE = "yeild_model.pkl"
-PIPELINE_FILE = "yeild_pipeline.pkl"
-OUTPUT_SCALER = "output_scaler.pkl"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_FILE = os.path.join(BASE_DIR, "yeild_model.pkl")
+PIPELINE_FILE = os.path.join(BASE_DIR, "yeild_pipeline.pkl")
+OUTPUT_SCALER = os.path.join(BASE_DIR, "output_scaler.pkl")
 
 def build_pipeline():
     num_pipeline = Pipeline(steps=[
