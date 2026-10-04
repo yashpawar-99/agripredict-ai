@@ -20,16 +20,19 @@ def get_coordinates(location):
         "format": "json"
     }
 
-    response = requests.get(url, params=params)
-    data = response.json()
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        data = response.json()
 
-    if "results" not in data:
+        if not data or "results" not in data or not data["results"]:
+            return None, None
+
+        latitude = data["results"][0]["latitude"]
+        longitude = data["results"][0]["longitude"]
+
+        return latitude, longitude
+    except Exception:
         return None, None
-
-    latitude = data["results"][0]["latitude"]
-    longitude = data["results"][0]["longitude"]
-
-    return latitude, longitude
 
 #use for to farmer select the season and it passes a date to wather api to fached historical data 
 
@@ -101,7 +104,10 @@ def get_season_dates(season):
 
 #API boiler plate code -
 def wather(latitude,longitude,start_date,end_date):
-# Setup the Open-Meteo API client with cache and retry on error
+    if latitude is None or longitude is None:
+        raise ValueError("Latitude and longitude must be valid numbers to fetch weather data.")
+
+    # Setup the Open-Meteo API client with cache and retry on error
     cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
     retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
     openmeteo = openmeteo_requests.Client(session = retry_session)
@@ -121,6 +127,8 @@ def wather(latitude,longitude,start_date,end_date):
         "timezone": "auto",
     }
     responses = openmeteo.weather_api(url, params = params)
+    if not responses:
+        raise RuntimeError("No weather data returned from weather service for the specified location.")
 
     # Process first location. Add a for-loop for multiple locations or weather models
     response = responses[0]
@@ -187,19 +195,25 @@ def wather(latitude,longitude,start_date,end_date):
     #---------------------------------------------------------------------------------------------------
     return rainfall_30_days , temperature_2m,relative_humidity_1000hpa,relative_humidity_100hpa
 
-def get_weather(state, district, season):
+def get_weather(state, district, season, latitude=None, longitude=None):
     
     start_date, end_date = get_season_dates(season)
 
-    latitude, longitude = get_coordinates(f"{district},{state},india")
+    if latitude is None or longitude is None:
+        latitude, longitude = get_coordinates(f"{district},{state},india")
+        if latitude is None or longitude is None:
+            latitude, longitude = get_coordinates(district)
+
+    if latitude is None or longitude is None:
+        raise ValueError(f"Could not find coordinates for {district}, {state}.")
 
     return wather(latitude,longitude,start_date,end_date)
+if __name__ == "__main__":
+    rainfall_30_days , temperature_2m,relative_humidity_1000hpa,relative_humidity_100hpa = get_weather(
+        "Maharashtra",
+        "Pune",
+        "Kharif"
+    )
 
-rainfall_30_days , temperature_2m,relative_humidity_1000hpa,relative_humidity_100hpa = get_weather(
-    "Maharashtra",
-    "Pune",
-    "Kharif"
-)
-
-print("information fached by api")
-print(rainfall_30_days , temperature_2m, relative_humidity_1000hpa, relative_humidity_100hpa)
+    print("information fached by api")
+    print(rainfall_30_days , temperature_2m, relative_humidity_1000hpa, relative_humidity_100hpa)

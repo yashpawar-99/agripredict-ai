@@ -719,7 +719,9 @@ if generate:
             rainfall_30_days, temperature_2m, relative_humidity_1000hpa, relative_humidity_100hpa = get_weather(
                 state=state,
                 district=district,
-                season=season
+                season=season,
+                latitude=lat,
+                longitude=lon
             )
 
             # 2. Crop Recommendation Model
