@@ -11,6 +11,8 @@ from datetime import datetime
 from pathlib import Path
 import streamlit as st
 import plotly.graph_objects as go
+from home_page import render_home
+from about_page import render_about
 
 # ReportLab for PDF generation
 from reportlab.lib.pagesizes import A4
@@ -856,6 +858,384 @@ render_html("""
         font-size: 0.92rem;
         color: #1e293b;
     }
+    
+/* ===============================
+   AGRIPREDICT - MODERN GREEN THEME
+   Add inside your existing <style> block
+   =============================== */
+
+/* Main section headings */
+.section-head {
+    color: #15803d !important;
+    font-size: 27px !important;
+    font-weight: 800 !important;
+    margin: 28px 0 10px 0 !important;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #bbf7d0;
+    letter-spacing: -0.4px;
+}
+
+.section-head span {
+    color: #16a34a !important;
+}
+
+.section-sub {
+    color: #64748b !important;
+    font-size: 15px !important;
+    margin-bottom: 20px !important;
+}
+
+/* Home and About hero sections */
+.home-hero,
+.about-hero {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 55%, #f0fdf4 100%);
+    border: 1px solid #86efac;
+    border-radius: 22px;
+    padding: 38px 32px;
+    margin: 12px 0 22px 0;
+    box-shadow: 0 8px 24px rgba(22, 101, 52, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-kicker,
+.about-kicker {
+    color: #15803d !important;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+}
+
+.hero-title,
+.about-title {
+    color: #14532d !important;
+    font-size: clamp(30px, 4vw, 44px);
+    font-weight: 850;
+    line-height: 1.2;
+    margin-bottom: 16px;
+}
+
+.hero-title span,
+.about-title span {
+    color: #16a34a !important;
+}
+
+.hero-text,
+.about-text {
+    color: #365846 !important;
+    font-size: 16px;
+    line-height: 1.8;
+    max-width: 780px;
+}
+
+.hero-pill {
+    display: inline-block;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: #166534;
+    padding: 9px 16px;
+    border-radius: 30px;
+    font-weight: 700;
+    margin-top: 18px;
+}
+
+/* Feature cards on Home */
+.feature-card {
+    background: #ffffff;
+    border: 1px solid #bbf7d0;
+    border-top: 4px solid #22c55e;
+    border-radius: 16px;
+    padding: 22px 16px;
+    min-height: 205px;
+    box-shadow: 0 5px 16px rgba(22, 101, 52, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-icon {
+    font-size: 34px;
+    margin-bottom: 12px;
+}
+
+.feature-title {
+    color: #166534 !important;
+    font-size: 17px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.feature-text {
+    color: #64748b !important;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* How it works step cards */
+.step-card {
+    background: #f8fdf9;
+    border: 1px solid #bbf7d0;
+    border-radius: 15px;
+    padding: 20px 15px;
+    min-height: 185px;
+    box-shadow: 0 4px 12px rgba(22, 101, 52, 0.05);
+}
+
+.step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: #16a34a;
+    color: white !important;
+    border-radius: 50%;
+    font-size: 17px;
+    font-weight: 800;
+    margin-bottom: 14px;
+}
+
+.step-title {
+    color: #166534 !important;
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.step-text {
+    color: #64748b !important;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* About page objective and process cards */
+.objective-card,
+.process-card {
+    background: #ffffff;
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
+    padding: 22px 16px;
+    min-height: 195px;
+    box-shadow: 0 5px 16px rgba(22, 101, 52, 0.06);
+}
+
+.objective-title,
+.process-title {
+    color: #15803d !important;
+    font-size: 16px;
+    font-weight: 800;
+    margin: 12px 0 8px 0;
+}
+
+.objective-text,
+.process-text {
+    color: #64748b !important;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* Machine learning model cards */
+.model-card {
+    border: 1px solid #bbf7d0;
+    border-radius: 18px;
+    padding: 24px;
+    margin: 8px 0 18px 0;
+    box-shadow: 0 6px 18px rgba(22, 101, 52, 0.07);
+    line-height: 1.8;
+}
+
+.model-title {
+    color: #166534 !important;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.model-text,
+.small-text {
+    color: #475569 !important;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.model-card b {
+    color: #15803d;
+}
+
+.model-card li {
+    margin-bottom: 5px;
+}
+
+/* Dataset and source box */
+.source-card {
+    background: #ffffff;
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 5px 16px rgba(22, 101, 52, 0.06);
+}
+
+.source-title {
+    color: #15803d !important;
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.source-card hr {
+    border: none;
+    border-top: 1px solid #dcfce7;
+    margin: 18px 0;
+}
+
+/* Technology stack boxes */
+.tech-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 13px 6px;
+    text-align: center;
+    min-height: 95px;
+    margin-bottom: 10px;
+}
+
+.tech-icon {
+    font-size: 25px;
+    margin-bottom: 7px;
+}
+
+.tech-name {
+    color: #166534 !important;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+/* Team cards */
+.team-person {
+    background: #ffffff;
+    border: 1px solid #bbf7d0;
+    border-radius: 15px;
+    padding: 20px 8px;
+    text-align: center;
+    min-height: 145px;
+    box-shadow: 0 4px 14px rgba(22, 101, 52, 0.06);
+}
+
+.avatar {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.person-name {
+    color: #166534 !important;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.person-role {
+    color: #64748b !important;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+/* Project and contact cards */
+.contact-card {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-left: 4px solid #22c55e;
+    border-radius: 13px;
+    padding: 20px;
+    margin-bottom: 12px;
+}
+
+.contact-title {
+    color: #166534 !important;
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+/* Disclaimer */
+.disclaimer {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-left: 5px solid #f59e0b;
+    border-radius: 12px;
+    color: #78350f !important;
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.8;
+    margin: 12px 0 25px 0;
+}
+
+/* Footer */
+.footer {
+    background: linear-gradient(135deg, #14532d, #166534);
+    border: 1px solid #15803d;
+    border-radius: 16px;
+    text-align: center;
+    padding: 25px 18px;
+    margin-top: 35px;
+}
+
+.footer-title {
+    color: #ffffff !important;
+    font-size: 24px;
+    font-weight: 850;
+    margin-bottom: 8px;
+}
+
+.footer-text {
+    color: #dcfce7 !important;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* Start Prediction and other buttons */
+.stButton > button,
+.stLinkButton > a {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: #ffffff !important;
+    border: 1px solid #15803d;
+    border-radius: 12px;
+    font-weight: 750;
+    padding: 10px 18px;
+    transition: all 0.2s ease;
+}
+
+.stButton > button:hover,
+.stLinkButton > a:hover {
+    background: #166534;
+    border-color: #166534;
+    color: #ffffff !important;
+    box-shadow: 0 5px 14px rgba(22, 101, 52, 0.2);
+}
+
+/* Responsive layout for smaller screens */
+@media (max-width: 768px) {
+    .home-hero,
+    .about-hero {
+        padding: 25px 18px;
+        border-radius: 16px;
+    }
+
+    .hero-title,
+    .about-title {
+        font-size: 30px;
+    }
+
+    .section-head {
+        font-size: 23px !important;
+    }
+
+    .feature-card,
+    .step-card,
+    .objective-card,
+    .process-card {
+        min-height: auto;
+        margin-bottom: 12px;
+    }
+}
+
 </style>
 """)
 
@@ -863,7 +1243,7 @@ render_html("""
 # SESSION STATE INITIALIZATION
 # ----------------------------------------------------------------------
 if "current_page" not in st.session_state:
-    st.session_state.current_page = "New Prediction"
+    st.session_state.current_page = "Home"
 
 if "show_results" not in st.session_state:
     st.session_state.show_results = False
@@ -947,15 +1327,22 @@ page = st.session_state.current_page
 # Other Pages
 if page != "New Prediction":
     render_html(f'<p class="page-title">{icon("leaf", 30, "#16a34a")} {page}</p>')
+    # if page == "Home":
+    #     render_html('<p class="page-sub">Welcome to AgriPredict AI — Empowering farmers with intelligent crop advisory</p>')
+    #     st.info("The Home dashboard is under development. Select **New Prediction** from the sidebar to test predictions.")
     if page == "Home":
-        render_html('<p class="page-sub">Welcome to AgriPredict AI — Empowering farmers with intelligent crop advisory</p>')
-        st.info("The Home dashboard is under development. Select **New Prediction** from the sidebar to test predictions.")
+        render_home()
+        st.stop()
+
+    elif page == "About":
+        render_about()
+        st.stop()
     elif page == "Model Insights":
         render_html('<p class="page-sub">Explore performance metrics and feature importances of our models</p>')
         st.info("Model metrics and analytics are under development. Select **New Prediction** from the sidebar to test predictions.")
-    elif page == "About":
-        render_html('<p class="page-sub">About the AgriPredict AI project & system</p>')
-        st.info("AgriPredict AI is an agricultural decision-support tool. Select **New Prediction** from the sidebar to test predictions.")
+    # elif page == "About":
+    #     render_html('<p class="page-sub">About the AgriPredict AI project & system</p>')
+    #     st.info("AgriPredict AI is an agricultural decision-support tool. Select **New Prediction** from the sidebar to test predictions.")
     st.stop()
 
 
