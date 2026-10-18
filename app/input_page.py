@@ -591,9 +591,65 @@ if page != "New Prediction":
     elif page == "Model Insights":
         st.markdown('<p class="page-sub">Explore performance metrics and feature importances of our models</p>', unsafe_allow_html=True)
         st.info("Model metrics and analytics are under development. Select **New Prediction** from the sidebar to test predictions.")
+    # elif page == "About":
+    #     st.markdown('<p class="page-sub">About the AgriPredict AI project & system</p>', unsafe_allow_html=True)
+    #     st.info("AgriPredict AI is an agricultural decision-support tool. Select **New Prediction** from the sidebar to test predictions.")
     elif page == "About":
-        st.markdown('<p class="page-sub">About the AgriPredict AI project & system</p>', unsafe_allow_html=True)
-        st.info("AgriPredict AI is an agricultural decision-support tool. Select **New Prediction** from the sidebar to test predictions.")
+        st.markdown(
+            '<p class="page-title">ℹ️ About AgriPredict</p>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            '<p class="page-sub">AI-powered Agricultural Decision Support</p>',
+            unsafe_allow_html=True
+        )
+
+        st.write("""
+        AgriPredict is an academic project based on Artificial
+        Intelligence and Machine Learning.
+
+        The main purpose of this project is to help farmers make
+        informed farming decisions using soil information,
+        weather data, crop recommendation and yield prediction.
+        """)
+
+        st.markdown("## 🎯 Project Objectives")
+
+        st.markdown("""
+        - Recommend suitable crops based on soil and weather data.
+        - Use soil nutrient values and pH information.
+        - Integrate weather information for crop decisions.
+        - Estimate crop yield and total production.
+        - Support sustainable agricultural practices.
+        """)
+
+        st.markdown("## 🛠️ Technologies Used")
+
+        tech1, tech2 = st.columns(2)
+
+        with tech1:
+            with st.container(border=True):
+                st.subheader("💻 Programming")
+                st.write("Python")
+                st.write("Streamlit")
+
+        with tech2:
+            with st.container(border=True):
+                st.subheader("🤖 Machine Learning")
+                st.write("Scikit-learn")
+                st.write("Crop Recommendation")
+                st.write("Crop Yield Prediction")
+
+        st.markdown("## 🌍 Our Mission")
+
+        st.write("""
+        Our mission is to support farmers with useful
+        technology, improve agricultural decisions and
+        encourage smarter and more sustainable farming.
+        """)
+
+        st.caption("AgriPredict | Academic AIML Project")    
     st.stop()
 
 head_col, banner_col = st.columns([2.2, 1])
