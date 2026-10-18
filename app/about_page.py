@@ -4,6 +4,181 @@ import streamlit as st
 
 def render_about():
 
+    # Page-specific styling: modern, consistent agricultural dashboard design
+    st.markdown("""
+    <style>
+    .about-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 3rem 3.2rem;
+        margin: 0.4rem 0 2rem 0;
+        border-radius: 26px;
+        background: linear-gradient(125deg, #e8f7e9 0%, #d3efd8 48%, #f4fbef 100%);
+        border: 1px solid #c9e7ce;
+        box-shadow: 0 12px 30px rgba(30, 90, 48, 0.10);
+    }
+    .about-hero:after {
+        content: "🌾";
+        position: absolute;
+        right: 4%;
+        bottom: -25px;
+        font-size: 145px;
+        opacity: 0.13;
+        transform: rotate(-12deg);
+        pointer-events: none;
+    }
+    .about-content { position: relative; z-index: 1; max-width: 850px; }
+    .about-kicker {
+        display: inline-block;
+        padding: 7px 13px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.75);
+        color: #287342;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 1.3px;
+        margin-bottom: 14px;
+    }
+    .about-title {
+        color: #183d2a;
+        font-size: clamp(2.1rem, 5vw, 3.25rem);
+        line-height: 1.12;
+        font-weight: 850;
+        margin-bottom: 12px;
+    }
+    .about-title span, .section-head span { color: #27834b; }
+    .about-text {
+        color: #365744;
+        font-size: 1.03rem;
+        line-height: 1.8;
+        max-width: 760px;
+        margin-top: 12px;
+    }
+    .section-head {
+        color: var(--text-color, #203b2b);
+        font-size: 1.65rem;
+        line-height: 1.3;
+        font-weight: 800;
+        margin: 2.2rem 0 0.45rem 0;
+    }
+    .section-sub {
+        color: #718174;
+        font-size: 0.98rem;
+        margin: 0 0 1.15rem 0;
+    }
+    .objective-card, .process-card, .model-card, .source-card,
+    .contact-card, .team-person, .tech-box, .disclaimer {
+        border: 1px solid rgba(90, 130, 98, 0.18);
+        border-radius: 18px;
+        box-shadow: 0 7px 20px rgba(29, 67, 39, 0.055);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .objective-card, .process-card {
+        height: 100%;
+        min-height: 185px;
+        padding: 1.25rem 1.15rem;
+        background: var(--secondary-background-color, #ffffff);
+    }
+    .objective-card:hover, .process-card:hover, .model-card:hover,
+    .tech-box:hover, .team-person:hover, .contact-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 26px rgba(29, 67, 39, 0.11);
+    }
+    .objective-title, .process-title {
+        color: var(--text-color, #244b31);
+        font-size: 1.03rem;
+        font-weight: 800;
+        line-height: 1.4;
+        margin: 12px 0 7px;
+    }
+    .objective-text, .process-text, .model-text, .small-text {
+        color: var(--text-color, #53675a);
+        font-size: 0.91rem;
+        line-height: 1.65;
+    }
+    .process-card { min-height: 205px; }
+    .process-card > div:first-child {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: #e6f5e8;
+    }
+    .model-card {
+        height: 100%;
+        padding: 1.5rem;
+        background: var(--secondary-background-color, #ffffff) !important;
+        border-top: 4px solid #3b9658;
+    }
+    .model-card:nth-of-type(2) { border-top-color: #7b69c8; }
+    .model-title, .source-title, .contact-title {
+        color: var(--text-color, #244b31);
+        font-size: 1.12rem;
+        font-weight: 800;
+        margin-bottom: 0.75rem;
+    }
+    .model-card ul { padding-left: 1.25rem; line-height: 1.8; }
+    .source-card { padding: 1.4rem; background: var(--secondary-background-color, #fff); }
+    .source-card hr { border: none; border-top: 1px solid rgba(100,130,105,.2); margin: 1rem 0; }
+    .tech-box {
+        text-align: center;
+        min-height: 95px;
+        padding: 0.9rem 0.35rem;
+        margin-bottom: 0.7rem;
+        background: var(--secondary-background-color, #fff);
+    }
+    .tech-icon { font-size: 1.55rem; margin-bottom: 0.3rem; }
+    .tech-name { font-size: 0.82rem; font-weight: 700; color: var(--text-color, #35533d); }
+    .team-person {
+        height: 100%;
+        min-height: 150px;
+        padding: 1.1rem 0.45rem;
+        text-align: center;
+        background: var(--secondary-background-color, #fff);
+        overflow-wrap: anywhere;
+    }
+    .avatar {
+        width: 52px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.7rem;
+        border-radius: 50%;
+        background: #e5f4e8;
+        font-size: 1.65rem;
+    }
+    .person-name { font-size: 0.9rem; font-weight: 800; line-height: 1.4; color: var(--text-color, #244b31); }
+    .person-role { font-size: 0.78rem; margin-top: 0.35rem; color: #32814a; font-weight: 700; }
+    .contact-card { padding: 1.2rem; background: var(--secondary-background-color, #fff); min-height: 125px; }
+    .disclaimer {
+        padding: 1.2rem 1.4rem;
+        border-left: 4px solid #d6a33b;
+        background: rgba(245, 190, 62, 0.09);
+        color: var(--text-color, #59634e);
+        line-height: 1.75;
+    }
+    .footer {
+        text-align: center;
+        margin-top: 2.5rem;
+        padding: 1.5rem 1rem;
+        border-top: 1px solid rgba(100,130,105,.22);
+    }
+    .footer-title { font-size: 1.25rem; font-weight: 850; color: #32814a; }
+    .footer-text { color: #7a887d; font-size: 0.86rem; margin-top: 0.3rem; }
+    @media (max-width: 768px) {
+        .about-hero { padding: 2rem 1.35rem; }
+        .about-hero:after { font-size: 90px; right: 1%; }
+        .about-text { font-size: 0.95rem; }
+        .section-head { font-size: 1.4rem; }
+        .team-person { min-height: 145px; }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+
     # Hero section
     st.markdown("""
     <div class="about-hero">
@@ -184,7 +359,10 @@ def render_about():
             ("🤖", "Scikit-learn"),
             ("⚙️", "Joblib"),
             ("📱", "Streamlit"),
-            ("☁️", "Weather API")
+            ("☁️", "Weather API"), 
+            ("📈", "Matplotlib"),
+            ("📉", "Seaborn"),
+            ("📄", "ReportLab")
         ]
 
         cols = st.columns(4)
@@ -209,18 +387,25 @@ def render_about():
         "Om Patane",
         "Prasad Kalyani",
         "Sumit Shinde",
-        "Pritesh"
+        "Pritesh Pawara"
     ]
+    team_roll = [
+            "Head Developer",
+            "Tester",
+            "software Engineer",
+            "Frontend Developer",
+            "Team member"
+        ]
 
     cols = st.columns(5)
 
-    for col, name in zip(cols, team):
+    for col, name, role in zip(cols, team, team_roll):
         with col:
             st.markdown(f"""
             <div class="team-person">
                 <div class="avatar">👨‍💻</div>
                 <div class="person-name">{name}</div>
-                <div class="person-role">Team Member</div>
+                <div class="person-role">{role}</div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -239,22 +424,15 @@ def render_about():
             <div class="small-text">
                 Explore the project source code and documentation.
             </div>
+            <div style="margin-top: 12px;">
+                <a href="https://github.com/yashpawar-99/agripredict-ai.git"
+                   target="_blank" rel="noopener noreferrer"
+                   style="color:#27834b;font-weight:700;overflow-wrap:anywhere;">
+                    https://github.com/yashpawar-99/agripredict-ai.git
+                </a>
+            </div>
         </div>
         """, unsafe_allow_html=True)
-
-        st.write("**GitHub:** Add your actual project repository URL below.")
-
-        st.text_input(
-            "GitHub repository URL",
-            key="about_github_url",
-            placeholder="https://github.com/username/repository"
-        )
-
-        if st.session_state.get("about_github_url", "").startswith("https://"):
-            st.link_button(
-                "Open GitHub Project",
-                st.session_state["about_github_url"]
-            )
 
     with c2:
         st.markdown("""

@@ -1296,7 +1296,6 @@ with st.sidebar:
     nav_pages = [
         ("Home", ":material/home:"),
         ("New Prediction", ":material/description:"),
-        ("Model Insights", ":material/bar_chart:"),
         ("About", ":material/info:"),
     ]
 
@@ -1337,9 +1336,6 @@ if page != "New Prediction":
     elif page == "About":
         render_about()
         st.stop()
-    elif page == "Model Insights":
-        render_html('<p class="page-sub">Explore performance metrics and feature importances of our models</p>')
-        st.info("Model metrics and analytics are under development. Select **New Prediction** from the sidebar to test predictions.")
     # elif page == "About":
     #     render_html('<p class="page-sub">About the AgriPredict AI project & system</p>')
     #     st.info("AgriPredict AI is an agricultural decision-support tool. Select **New Prediction** from the sidebar to test predictions.")
