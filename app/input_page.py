@@ -629,10 +629,10 @@ render_html("""
     }
 
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #053b2a 0%, #022319 100%) !important;
+        background: linear-gradient(180deg, #eef8f1 0%, #e2f1e7 100%) !important;
     }
     [data-testid="stSidebar"] * {
-        color: #eafaf1 !important;
+        color: #14532d !important;
     }
     [data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
         padding-top: 1.5rem !important;
@@ -661,28 +661,28 @@ render_html("""
 
     [data-testid="stSidebar"] div.stButton > button[data-testid="stBaseButton-primary"],
     [data-testid="stSidebar"] div.stButton > button[kind="primary"] {
-        background: #00874e !important;
+        background: #16a34a !important;
         color: #ffffff !important;
         font-weight: 700 !important;
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
     }
     [data-testid="stSidebar"] div.stButton > button[data-testid="stBaseButton-primary"]:hover,
     [data-testid="stSidebar"] div.stButton > button[kind="primary"]:hover {
-        background: #007744 !important;
+        background: #15803d !important;
         color: #ffffff !important;
     }
 
     [data-testid="stSidebar"] div.stButton > button[data-testid="stBaseButton-secondary"],
     [data-testid="stSidebar"] div.stButton > button[kind="secondary"] {
         background: transparent !important;
-        color: #d1fae5 !important;
+        color: #14532d !important;
         font-weight: 500 !important;
         box-shadow: none !important;
     }
     [data-testid="stSidebar"] div.stButton > button[data-testid="stBaseButton-secondary"]:hover,
     [data-testid="stSidebar"] div.stButton > button[kind="secondary"]:hover {
-        background: rgba(255, 255, 255, 0.08) !important;
-        color: #ffffff !important;
+        background: rgba(22, 163, 74, 0.12) !important;
+        color: #14532d !important;
     }
 
     [data-testid="stSidebar"] div.stButton button p {
@@ -1283,10 +1283,10 @@ with st.sidebar:
         f"""
         <div style="text-align: center; padding: 0.2rem 0 1.6rem 0;">
             {logo_html}
-            <h1 style="color: #ffffff; font-size: 1.95rem; font-weight: 800; margin: 0; letter-spacing: -0.5px; line-height: 1.2;">
+            <h1 style="color: #14532d; font-size: 1.95rem; font-weight: 800; margin: 0; letter-spacing: -0.5px; line-height: 1.2;">
                 Agri<span style="color: #22c55e;">Predict</span>
             </h1>
-            <p style="color: #a7d9c4; font-size: 0.95rem; font-weight: 500; line-height: 1.35; margin: 6px 0 0 0;">
+            <p style="color: #4b8060; font-size: 0.95rem; font-weight: 500; line-height: 1.35; margin: 6px 0 0 0;">
                 Grow Smarter<br>Farm Better
             </p>
         </div>
@@ -1313,7 +1313,7 @@ with st.sidebar:
         f"""
         <div style="text-align: center; padding-bottom: 1.2rem;">
             {footer_leaves_svg(46)}
-            <p style="color: #eafaf1; font-size: 0.95rem; font-weight: 500; line-height: 1.35; margin: 10px 0 0 0;">
+            <p style="color: #4b8060; font-size: 0.95rem; font-weight: 500; line-height: 1.35; margin: 10px 0 0 0;">
                 For a Sustainable<br>Tomorrow
             </p>
             <div style="width: 44px; height: 3.5px; background: #22c55e; border-radius: 4px; margin: 12px auto 0 auto;"></div>
