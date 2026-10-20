@@ -1,5 +1,6 @@
 streamlit
 plotly
+reportlab
 numpy
 pandas
 scikit-learn
@@ -9,3 +10,4 @@ requests
 requests-cache
 retry-requests
 openmeteo-requests
+ydata-profiling
