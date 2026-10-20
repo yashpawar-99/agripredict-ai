@@ -10,4 +10,3 @@ requests
 requests-cache
 retry-requests
 openmeteo-requests
-ydata-profiling
