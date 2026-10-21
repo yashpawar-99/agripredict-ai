@@ -1016,311 +1016,193 @@ if st.session_state.show_results and st.session_state.prediction_data is not Non
         """
     )
 
-    # 3. Row 1: Recommended Crop & Expected Yield Cards (Equal 2 columns)
-    col_c1, col_c2 = st.columns(2)
+    # 3. Weather Information — full-width section
+    with st.container(border=True):
+        render_html(f"""
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:4px 6px 12px;">
+            <div style="display:flex;align-items:center;gap:9px;">
+                {icon("cloud-rain", 25, "#0284c7")}
+                <span style="font-size:1.2rem;font-weight:800;color:#0f172a;">Weather Information</span>
+                <span style="font-size:.82rem;color:#64748b;">(Auto-fetched)</span>
+            </div>
+            <span class="res-badge-green">● Weather data</span>
+        </div>
+        """)
+        wx1, wx2, wx3, wx4 = st.columns(4)
+        weather_cards = [
+            (wx1, "thermometer", "Temperature", f"{res['temperature_2m']:.1f} °C", "#eaf4ff", "#0284c7"),
+            (wx2, "droplet", "Humidity", f"{int(round(res['relative_humidity_1000hpa']))} %", "#eaf4ff", "#0284c7"),
+            (wx3, "cloud-rain", "Rainfall", f"{res['rainfall_30_days']:.1f} mm", "#eaf4ff", "#0284c7"),
+            (wx4, "sprout", "Season", res["season"].split(" (")[0], "#eafaf1", "#15803d"),
+        ]
+        for col, ico, label, value, bg, fg in weather_cards:
+            with col:
+                render_html(f"""
+                <div style="height:100%;padding:15px 10px;background:{bg};border:1px solid #e2edf3;border-radius:12px;text-align:center;">
+                    <div style="margin-bottom:5px;">{icon(ico, 24, fg)}</div>
+                    <div style="font-size:.84rem;color:#475569;">{label}</div>
+                    <div style="font-size:1.35rem;font-weight:800;color:#0f172a;margin-top:3px;">{value}</div>
+                </div>
+                """)
+        note("info", f"Weather data fetched for {res['state']}, {res['district'].title()} ({res['season'].split(' (')[0]} season).", kind="blue")
 
-    with col_c1:
-        with st.container(border=True):
-            crop_name = res["recommended_crop"].title()
-            crop_img_tag = get_crop_image_tag(crop_name)
-            render_html(
-                f"""
-                <div style="padding: 10px 14px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <div style="width:28px; height:28px; border-radius:50%; background:#dcfce7; display:flex; align-items:center; justify-content:center;">
-                                {icon("sprout", 18, "#16a34a")}
-                            </div>
-                            <span style="font-weight:700; color:#1e293b; font-size:1.05rem;">Recommended Crop</span>
-                        </div>
-                        <span class="res-badge-green">High Suitability</span>
+    render_html("<br>")
+
+    # 4. Recommended crop — full-width feature card
+    crop_name = res["recommended_crop"].title()
+    crop_img_tag = get_crop_image_tag(crop_name)
+    with st.container(border=True):
+        render_html(f"""
+        <div style="display:flex;align-items:center;gap:10px;padding:4px 6px 12px;">
+            {icon("sprout", 25, "#16a34a")}
+            <span style="font-size:1.25rem;font-weight:800;color:#0f172a;">Recommended Crop</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;padding:20px;background:linear-gradient(110deg,#effaf2,#ffffff);border:1px solid #d8f0df;border-radius:14px;">
+            <div style="flex:1;min-width:220px;">
+                <span class="res-badge-green">Recommended Crop</span>
+                <div style="font-size:2.6rem;line-height:1.15;font-weight:850;color:#14532d;margin:10px 0;">{crop_name}</div>
+                <div style="font-size:.96rem;line-height:1.6;color:#334155;max-width:540px;">
+                    This crop was selected by your crop recommendation model using the soil nutrient values, pH, weather and farm season you entered.
+                </div>
+            </div>
+            <div style="flex-shrink:0;">{crop_img_tag}</div>
+        </div>
+        """)
+
+    render_html("<br>")
+
+    # 5. Yield prediction — three metric cards
+    predicted_yield = float(res["predicted_yield"])
+    predicted_production = float(res.get("predicted_production", predicted_yield * res["area"]))
+    area = float(res["area"])
+    with st.container(border=True):
+        render_html(f"""
+        <div style="display:flex;align-items:center;gap:10px;padding:4px 6px 12px;">
+            {icon("barchart", 25, "#0284c7")}
+            <span style="font-size:1.25rem;font-weight:800;color:#0f172a;">Yield Prediction</span>
+        </div>
+        <div style="font-size:.9rem;color:#64748b;margin:-4px 6px 12px;">Based on the machine learning model and your farm inputs.</div>
+        """)
+        y1, y2, y3 = st.columns(3)
+        metric_cards = [
+            (y1, "Expected Yield", f"{predicted_yield:.2f}", "tonnes/hectare", "#eaf4ff", "#075985", "barchart"),
+            (y2, "Total Production", f"{predicted_production:.2f}", "tonnes", "#eafaf1", "#14532d", "sprout"),
+            (y3, "Total Area", f"{area:.1f}", "hectares", "#fff8e5", "#854d0e", "leaf"),
+        ]
+        for col, label, value, unit, bg, fg, ico in metric_cards:
+            with col:
+                render_html(f"""
+                <div style="height:100%;min-height:118px;display:flex;align-items:center;gap:13px;padding:18px 14px;background:{bg};border:1px solid #e2e8f0;border-radius:12px;">
+                    <div style="min-width:48px;height:48px;border-radius:50%;background:#ffffffb8;display:flex;align-items:center;justify-content:center;">
+                        {icon(ico, 26, fg)}
                     </div>
-
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 14px;">
-                        <div style="max-width: 60%;">
-                            <div style="font-size: 2.85rem; font-weight: 850; color: #14532d; line-height: 1.1; margin-bottom: 8px;">
-                                {crop_name}
-                            </div>
-                            <div style="color: #64748b; font-size: 0.88rem; line-height: 1.45;">
-                                This crop is most suitable for your soil and weather conditions.
-                            </div>
-                        </div>
-                        <div style="flex-shrink:0; text-align:right;">
-                            {crop_img_tag}
-                        </div>
+                    <div>
+                        <div style="font-size:.86rem;color:#334155;font-weight:650;">{label}</div>
+                        <div style="font-size:1.9rem;line-height:1.2;font-weight:850;color:{fg};margin-top:3px;">{value}</div>
+                        <div style="font-size:.95rem;font-weight:700;color:{fg};">{unit}</div>
                     </div>
                 </div>
-                """
-            )
+                """)
 
-    with col_c2:
-        with st.container(border=True):
-            predicted_yield = res["predicted_yield"]
-            yield_diff_pct = res.get("yield_diff_pct", 12)
-            render_html(
-                f"""
-                <div style="padding: 10px 14px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <div style="width:28px; height:28px; border-radius:50%; background:#e0f2fe; display:flex; align-items:center; justify-content:center;">
-                                {icon("barchart", 18, "#0284c7")}
-                            </div>
-                            <span style="font-weight:700; color:#1e293b; font-size:1.05rem;">Expected Yield</span>
-                        </div>
-                        <span class="res-badge-green">+{yield_diff_pct}% Higher than regional average</span>
-                    </div>
+    render_html("<br>")
 
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 14px;">
-                        <div style="max-width: 60%;">
-                            <div style="color: #14532d; line-height: 1.1; margin-bottom: 8px;">
-                                <span style="font-size: 2.85rem; font-weight: 850;">{predicted_yield:.2f}</span>
-                                <span style="font-size: 1.15rem; font-weight: 700; margin-left: 6px;">tonnes/hectare</span>
-                            </div>
-                            <div style="color: #64748b; font-size: 0.88rem; line-height: 1.45;">
-                                Estimated yield based on machine learning model using your input data.
-                            </div>
-                        </div>
-                        <div style="flex-shrink:0; text-align:right;">
-                            {yield_chart_svg()}
-                        </div>
-                    </div>
+    # 6. Your input summary — full-width, three sections
+    with st.container(border=True):
+        title_col, edit_col = st.columns([4, 1])
+        with title_col:
+            render_html(f"""
+            <div style="display:flex;align-items:center;gap:9px;padding:4px 6px 12px;">
+                {icon("doc", 23, "#16a34a")}
+                <span style="font-size:1.2rem;font-weight:800;color:#0f172a;">Your Input Summary</span>
+            </div>
+            """)
+        with edit_col:
+            if st.button("✏️ Edit Inputs", key="btn_edit_inputs_top", use_container_width=True):
+                st.session_state.show_results = False
+                st.rerun()
+
+        loc_col, soil_col, farm_col = st.columns(3)
+        with loc_col:
+            render_html(f"""
+            <div style="padding:10px 12px;border-right:1px solid #e2e8f0;">
+                <div style="font-weight:750;color:#14532d;margin-bottom:10px;">📍 Location Details</div>
+                <div class="res-summary-cell"><span>State</span><b>{res['state']}</b></div>
+                <div class="res-summary-cell"><span>District</span><b>{res['district'].title()}</b></div>
+            </div>
+            """)
+        with soil_col:
+            render_html(f"""
+            <div style="padding:10px 12px;border-right:1px solid #e2e8f0;">
+                <div style="font-weight:750;color:#14532d;margin-bottom:10px;">🌱 Soil Information</div>
+                <div class="res-summary-cell"><span>Nitrogen (N)</span><b>{int(res['nitrogen'])} kg/ha</b></div>
+                <div class="res-summary-cell"><span>Phosphorus (P)</span><b>{int(res['phosphorus'])} kg/ha</b></div>
+                <div class="res-summary-cell"><span>Potassium (K)</span><b>{int(res['potassium'])} kg/ha</b></div>
+                <div class="res-summary-cell"><span>Soil pH</span><b>{res['soil_ph']:.1f}</b></div>
+            </div>
+            """)
+        with farm_col:
+            render_html(f"""
+            <div style="padding:10px 12px;">
+                <div style="font-weight:750;color:#14532d;margin-bottom:10px;">🌾 Farm Details</div>
+                <div class="res-summary-cell"><span>Season</span><b>{res['season']}</b></div>
+                <div class="res-summary-cell"><span>Area</span><b>{area:.1f} hectares</b></div>
+            </div>
+            """)
+
+    render_html("<br>")
+
+    # 7. Why this crop?
+    with st.container(border=True):
+        render_html(f"""
+        <div style="display:flex;align-items:center;gap:10px;padding:4px 6px 10px;">
+            {icon("bulb", 25, "#ca8a04")}
+            <span style="font-size:1.2rem;font-weight:800;color:#0f172a;">Why This Crop?</span>
+        </div>
+        """)
+        reason_col, advisory_col = st.columns([2.2, 1])
+        with reason_col:
+            for reason in [
+                "Suitable for the soil nutrient values provided",
+                "Considers the selected season and fetched weather conditions",
+                "Crop selected by the trained crop recommendation model",
+                "Yield estimated separately using the yield prediction model",
+            ]:
+                render_html(f'<div class="res-check-item"><span style="color:#16a34a;font-weight:800;font-size:1.1rem;">✓</span><span>{reason}</span></div>')
+        with advisory_col:
+            render_html(f"""
+            <div style="height:100%;min-height:110px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:18px;background:#eafaf1;border:1px solid #bbf7d0;border-radius:12px;">
+                {icon("leaf", 30, "#16a34a")}
+                <div style="font-size:.86rem;line-height:1.5;color:#365d47;margin-top:8px;">
+                    Results are estimates from your inputs and trained models; actual field outcomes may vary.
                 </div>
-                """
-            )
+            </div>
+            """)
 
-    render_html("<br style='margin: 8px 0;'>")
+    render_html("<br>")
 
-    # 4. Row 2: Your Input Summary & Weather Information (Equal 2 columns)
-    col_s1, col_s2 = st.columns(2)
-
-    with col_s1:
-        with st.container(border=True):
-            h_col1, h_col2 = st.columns([3, 1])
-            with h_col1:
-                render_html(
-                    f"""
-                    <div style="display:flex; align-items:center; gap:8px; padding-top:4px;">
-                        {icon("doc", 20, "#16a34a")}
-                        <span style="font-weight:750; color:#1e293b; font-size:1.1rem;">Your Input Summary</span>
-                    </div>
-                    """
-                )
-            with h_col2:
-                if st.button("✏️ Edit Inputs", key="btn_edit_inputs_top", use_container_width=True):
-                    st.session_state.show_results = False
-                    st.rerun()
-
-            sub_loc, sub_soil, sub_farm = st.columns([1, 1.2, 1])
-
-            with sub_loc:
-                render_html(
-                    f"""
-                    <div style="font-weight:700; color:#1e293b; font-size:0.86rem; margin:12px 0 8px 0;">
-                        📍 Location Details
-                    </div>
-                    <div style="font-size:0.8rem; color:#64748b; margin-bottom:3px;">State</div>
-                    <div class="res-summary-cell" style="font-weight:600; color:#0f172a;">{res['state']}</div>
-                    <div style="font-size:0.8rem; color:#64748b; margin-bottom:3px;">District</div>
-                    <div class="res-summary-cell" style="font-weight:600; color:#0f172a;">{res['district'].title()}</div>
-                    
-                    <div style="display:flex; align-items:center; gap:10px; margin-top:10px; padding:6px 10px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0;">
-                        <svg width="45" height="42" viewBox="0 0 100 85" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M 22 25 L 35 15 L 60 12 L 80 15 L 92 30 L 95 48 L 78 58 L 65 72 L 45 78 L 30 70 L 20 62 L 15 45 Z" fill="#bbf0d3" stroke="#86efac" stroke-width="2"/>
-                            <circle cx="38" cy="46" r="6" fill="#16a34a"/>
-                            <circle cx="38" cy="46" r="3" fill="#ffffff"/>
-                        </svg>
-                        <div>
-                            <div style="font-weight:750; color:#14532d; font-size:0.86rem;">📍 {res['district'].title()}</div>
-                            <div style="color:#64748b; font-size:0.75rem;">{res['state']}</div>
-                        </div>
-                    </div>
-                    """
-                )
-
-            with sub_soil:
-                render_html(
-                    f"""
-                    <div style="font-weight:700; color:#1e293b; font-size:0.86rem; margin:12px 0 8px 0;">
-                        🌱 Soil Information
-                    </div>
-                    <div class="res-summary-cell">
-                        <span style="color:#64748b; font-size:0.82rem;">Nitrogen (N)</span>
-                        <span style="font-weight:700; color:#0f172a;">{int(res['nitrogen'])} <small style="color:#64748b; font-weight:500;">kg/ha</small></span>
-                    </div>
-                    <div class="res-summary-cell">
-                        <span style="color:#64748b; font-size:0.82rem;">Phosphorus (P)</span>
-                        <span style="font-weight:700; color:#0f172a;">{int(res['phosphorus'])} <small style="color:#64748b; font-weight:500;">kg/ha</small></span>
-                    </div>
-                    <div class="res-summary-cell">
-                        <span style="color:#64748b; font-size:0.82rem;">Potassium (K)</span>
-                        <span style="font-weight:700; color:#0f172a;">{int(res['potassium'])} <small style="color:#64748b; font-weight:500;">kg/ha</small></span>
-                    </div>
-                    <div class="res-summary-cell">
-                        <span style="color:#64748b; font-size:0.82rem;">Soil pH</span>
-                        <span style="font-weight:700; color:#0f172a;">{res['soil_ph']:.1f}</span>
-                    </div>
-                    """
-                )
-
-            with sub_farm:
-                render_html(
-                    f"""
-                    <div style="font-weight:700; color:#1e293b; font-size:0.86rem; margin:12px 0 8px 0;">
-                        🌾 Farm Details
-                    </div>
-                    <div style="font-size:0.8rem; color:#64748b; margin-bottom:3px;">Season</div>
-                    <div class="res-summary-cell" style="font-weight:600; color:#0f172a;">{res['season']}</div>
-                    <div style="font-size:0.8rem; color:#64748b; margin-bottom:3px;">Area</div>
-                    <div class="res-summary-cell" style="font-weight:600; color:#0f172a;">{res['area']:.1f} <small style="color:#64748b; font-weight:500;">hectares</small></div>
-                    """
-                )
-
-    with col_s2:
-        with st.container(border=True):
-            render_html(
-                f"""
-                <div style="display:flex; justify-content:space-between; align-items:center; padding: 4px 6px 12px 6px;">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        {icon("cloud-rain", 20, "#0284c7")}
-                        <span style="font-weight:750; color:#1e293b; font-size:1.1rem;">Weather Information <small style="font-weight:500; color:#64748b;">(Auto-fetched)</small></span>
-                    </div>
-                    <span class="res-badge-green">✓ Real-time data</span>
+    # 8. Additional insights
+    with st.container(border=True):
+        render_html(f"""
+        <div style="display:flex;align-items:center;gap:10px;padding:4px 6px 12px;">
+            {icon("insights", 24, "#0284c7")}
+            <span style="font-size:1.2rem;font-weight:800;color:#0f172a;">Additional Insights</span>
+        </div>
+        """)
+        ins1, ins2, ins3 = st.columns(3)
+        insight_cards = [
+            (ins1, "Water / Rainfall", f"{res['rainfall_30_days']:.1f} mm", "Rainfall recorded for the selected location and season.", "#eaf4ff", "#075985", "droplet"),
+            (ins2, "Soil pH", f"{res['soil_ph']:.1f}", "Use a soil test to confirm the pH and nutrient values.", "#fff8e5", "#854d0e", "leaf"),
+            (ins3, "Model Output", crop_name, f"Estimated yield: {predicted_yield:.2f} tonnes/hectare.", "#f3edff", "#6d28d9", "barchart"),
+        ]
+        for col, label, value, desc, bg, fg, ico in insight_cards:
+            with col:
+                render_html(f"""
+                <div style="height:100%;min-height:118px;padding:15px;background:{bg};border-radius:12px;border:1px solid #e2e8f0;">
+                    <div style="display:flex;align-items:center;gap:8px;">{icon(ico, 23, fg)}<span style="font-size:.88rem;font-weight:650;color:#334155;">{label}</span></div>
+                    <div style="font-size:1.25rem;font-weight:800;color:{fg};margin:6px 0;">{value}</div>
+                    <div style="font-size:.82rem;line-height:1.45;color:#475569;">{desc}</div>
                 </div>
-                """
-            )
-
-            w_col1, w_col2, w_col3 = st.columns(3)
-            with w_col1:
-                render_html(
-                    f"""
-                    <div class="res-metric-box">
-                        <div style="margin-bottom:6px;">{icon("thermometer", 24, "#0284c7")}</div>
-                        <div style="font-size:0.84rem; color:#64748b; margin-bottom:4px;">Temperature</div>
-                        <div style="font-size:1.55rem; font-weight:800; color:#0f172a;">{res['temperature_2m']:.1f} °C</div>
-                    </div>
-                    """
-                )
-            with w_col2:
-                render_html(
-                    f"""
-                    <div class="res-metric-box">
-                        <div style="margin-bottom:6px;">{icon("droplet", 24, "#0284c7")}</div>
-                        <div style="font-size:0.84rem; color:#64748b; margin-bottom:4px;">Humidity</div>
-                        <div style="font-size:1.55rem; font-weight:800; color:#0f172a;">{int(round(res['relative_humidity_1000hpa']))} %</div>
-                    </div>
-                    """
-                )
-            with w_col3:
-                render_html(
-                    f"""
-                    <div class="res-metric-box">
-                        <div style="margin-bottom:6px;">{icon("cloud-rain", 24, "#0284c7")}</div>
-                        <div style="font-size:0.84rem; color:#64748b; margin-bottom:4px;">Rainfall</div>
-                        <div style="font-size:1.55rem; font-weight:800; color:#0f172a;">{res['rainfall_30_days']:.1f} mm</div>
-                    </div>
-                    """
-                )
-
-            clean_s = res['season'].split(' (')[0]
-            render_html(
-                f"""
-                <div style="background:#f0f9ff; border:1px solid #e0f2fe; border-radius:10px; padding:10px 14px; margin-top:14px; display:flex; align-items:center; gap:8px;">
-                    {icon("info", 16, "#0284c7")}
-                    <span style="color:#0369a1; font-size:0.84rem;">
-                        Weather data fetched for {res['state']}, {res['district'].title()} ({clean_s} season).
-                    </span>
-                </div>
-                """
-            )
-
-    render_html("<br style='margin: 8px 0;'>")
-
-    # 5. Row 3: Why This Crop? & Additional Insights (Equal 2 columns)
-    col_w1, col_w2 = st.columns(2)
-
-    with col_w1:
-        with st.container(border=True):
-            render_html(
-                f"""
-                <div style="display:flex; align-items:center; gap:8px; padding: 4px 6px 12px 6px;">
-                    <span style="font-size: 20px;">💡</span>
-                    <span style="font-weight:750; color:#1e293b; font-size:1.1rem;">Why This Crop?</span>
-                </div>
-                """
-            )
-
-            w_left, w_right = st.columns([1.3, 1])
-            with w_left:
-                render_html(
-                    f"""
-                    <div style="padding-top: 4px;">
-                        <div class="res-check-item">
-                            <span style="color:#16a34a; font-weight:800; font-size:1.1rem;">✓</span>
-                            <span>Suitable for current soil nutrient levels</span>
-                        </div>
-                        <div class="res-check-item">
-                            <span style="color:#16a34a; font-weight:800; font-size:1.1rem;">✓</span>
-                            <span>Matches seasonal and weather conditions</span>
-                        </div>
-                        <div class="res-check-item">
-                            <span style="color:#16a34a; font-weight:800; font-size:1.1rem;">✓</span>
-                            <span>Historically good yield in your region</span>
-                        </div>
-                        <div class="res-check-item">
-                            <span style="color:#16a34a; font-weight:800; font-size:1.1rem;">✓</span>
-                            <span>High suitability score from our ML model</span>
-                        </div>
-                    </div>
-                    """
-                )
-
-            with w_right:
-                render_html(
-                    f"""
-                    <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:14px; padding:18px 16px; text-align:center; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div style="margin-bottom:8px;">{icon("leaf", 28, "#16a34a")}</div>
-                        <div style="color:#14532d; font-size:0.83rem; line-height:1.45; font-weight:500;">
-                            This recommendation is based on machine learning analysis of soil, weather and historical crop data.
-                        </div>
-                    </div>
-                    """
-                )
-
-    with col_w2:
-        with st.container(border=True):
-            render_html(
-                f"""
-                <div style="display:flex; align-items:center; gap:8px; padding: 4px 6px 12px 6px;">
-                    {icon("insights", 20, "#0284c7")}
-                    <span style="font-weight:750; color:#1e293b; font-size:1.1rem;">Additional Insights</span>
-                </div>
-                """
-            )
-
-            ins_col1, ins_col2 = st.columns(2)
-            with ins_col1:
-                render_html(
-                    f"""
-                    <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:14px; padding:16px 18px; height:100%;">
-                        <div style="margin-bottom:6px;">{icon("droplet", 22, "#0284c7")}</div>
-                        <div style="font-size:0.84rem; color:#64748b; font-weight:500;">Water Requirement</div>
-                        <div style="font-size:1.25rem; font-weight:800; color:#0f172a; margin:4px 0 6px 0;">Moderate</div>
-                        <div style="font-size:0.8rem; color:#64748b; line-height:1.4;">Suitable for current rainfall levels.</div>
-                    </div>
-                    """
-                )
-
-            with ins_col2:
-                render_html(
-                    f"""
-                    <div style="background:#fefce8; border:1px solid #fef08a; border-radius:14px; padding:16px 18px; height:100%;">
-                        <div style="margin-bottom:6px;">{icon("leaf", 22, "#ca8a04")}</div>
-                        <div style="font-size:0.84rem; color:#713f12; font-weight:500;">Soil Suitability</div>
-                        <div style="font-size:1.25rem; font-weight:800; color:#0f172a; margin:4px 0 6px 0;">Good</div>
-                        <div style="font-size:0.8rem; color:#713f12; line-height:1.4;">Your soil conditions are favorable for this crop.</div>
-                    </div>
-                    """
-                )
+                """)
 
     # 6. Action Footer & Landscape
     render_html("<br style='margin: 12px 0;'>")
